@@ -1,0 +1,84 @@
+<div class="container">
+  <h2>Administrador de Tareas (CRUD Angular)</h2>
+
+  <!-- Mensajes de éxito y error -->
+  <div *ngIf="mensajeExito" class="alert alert-success">
+    {{ mensajeExito }}
+  </div>
+  <div *ngIf="mensajeError" class="alert alert-danger">
+    {{ mensajeError }}
+  </div>
+
+  <div class="card-form">
+    <h3>{{ editando ? 'Editar Tarea' : 'Agregar Nueva Tarea' }}</h3>
+    
+    <!-- Formulario Reactivo -->
+    <form [formGroup]="tareaForm" (ngSubmit)="guardarTarea()">
+      <div class="form-group">
+        <label for="title">Título de la Tarea:</label>
+        <input 
+          id="title" 
+          type="text" 
+          formControlName="title" 
+          placeholder="Escribe el nombre de la tarea..."
+        />
+        <!-- Validación visual -->
+        <div *ngIf="tareaForm.get('title')?.invalid && tareaForm.get('title')?.touched" class="error-text">
+          <small *ngIf="tareaForm.get('title')?.errors?.['required']">El título es obligatorio.</small>
+          <small *ngIf="tareaForm.get('title')?.errors?.['minlength']">Debe tener al menos 3 caracteres.</small>
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group" *ngIf="editando">
+        <label>
+          <input type="checkbox" formControlName="completed" />
+          Completada
+        </label>
+      </div>
+
+      <div class="btn-container">
+        <button type="submit" [disabled]="tareaForm.invalid" class="btn btn-primary">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" *ngIf="editando" (click)="limpiarFormulario()" class="btn btn-secondary">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <hr />
+
+  <!-- Listado / Tabla de registros -->
+  <h3>Lista de Tareas Registradas</h3>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tarea of tareas">
+          <td>{{ tarea.id }}</td>
+          <td>{{ tarea.title }}</td>
+          <td>
+            <span [ngClass]="tarea.completed ? 'badge-success' : 'badge-pending'">
+              {{ tarea.completed ? 'Completada' : 'Pendiente' }}
+            </span>
+          </td>
+          <td>
+            <button (click)="seleccionarParaEditar(tarea)" class="btn btn-warning">Editar</button>
+            <button (click)="eliminarTarea(tarea.id)" class="btn btn-danger">Eliminar</button>
+          </td>
+        </tr>
+        <tr *ngIf="tareas.length === 0">
+          <td colspan="4" class="text-center">No hay tareas disponibles.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
